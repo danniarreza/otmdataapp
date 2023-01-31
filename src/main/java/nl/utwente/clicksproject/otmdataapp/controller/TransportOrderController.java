@@ -1,8 +1,13 @@
 package nl.utwente.clicksproject.otmdataapp.controller;
 
 import lombok.RequiredArgsConstructor;
+import nl.utwente.clicksproject.otmdataapp.model.arbitrary.Consignment;
 import nl.utwente.clicksproject.otmdataapp.model.arbitrary.TransportOrder;
+import nl.utwente.clicksproject.otmdataapp.model.otm.OTMConsignment;
 import nl.utwente.clicksproject.otmdataapp.model.otm.OTMTransportOrder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,12 +46,26 @@ public class TransportOrderController {
         try {
             //TODO Implement Your Logic To Save Data And Return Result Through ResponseEntity
 
-
-
             OTMTransportOrder otmTransportOrder = new OTMTransportOrder(
                 transportOrder.getTransport_order_id(), 
                 transportOrder.getTransport_order_description()
             );
+
+            List<Consignment> consignments = transportOrder.getConsignments();
+
+            if(consignments.size() > 0){
+                List<OTMConsignment> otmConsignments = new ArrayList<>();
+
+                for (Consignment consignment : consignments) {
+                    OTMConsignment otmConsignment = new OTMConsignment(
+                        consignment.getConsignment_id(), 
+                        consignment.getConsignment_description()
+                    );
+                    otmConsignments.add(otmConsignment);
+                }
+
+                otmTransportOrder.setConsignments(otmConsignments);
+            }
 
             return new ResponseEntity<>(otmTransportOrder, HttpStatus.OK);
         } catch (Exception e) {
